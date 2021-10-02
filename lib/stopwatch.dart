@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stopwatch/platform_alert.dart';
 
+const useAlert = false;
+
 class StopWatch extends StatefulWidget {
   static const route = '/stopwatch';
 
@@ -23,7 +25,7 @@ class _StopWatchState extends State<StopWatch> {
   late Timer timer;
   final laps = <int>[];
   final itemHeight = 60.0;
-  final scollController = ScrollController();
+  final scollController = ScrollController(initialScrollOffset: 0.0);
   bool isTicking = false;
 
   @override
@@ -47,29 +49,41 @@ class _StopWatchState extends State<StopWatch> {
     });
   }
 
-  void _stopTimer() {
+  void _stopTimer(BuildContext context) {
     timer.cancel();
     setState(() {
       isTicking = false;
     });
 
-    final totalRuntime = laps.fold(
-      milliseconds,
-      (int total, lap) => total + lap,
+    if (useAlert) {
+      final totalRuntime = laps.fold(
+        milliseconds,
+        (int total, lap) => total + lap,
+      );
+      final alert = PlatformAlert(
+        title: 'Run Completed!',
+        message: 'Total run time is ${_secondText(totalRuntime)}',
+      );
+      alert.show(context);
+    }
+
+    // bottom sheet
+    final controller = showBottomSheet(
+      context: context,
+      builder: _buildRunCompleteSheet,
     );
-    final alert = PlatformAlert(
-      title: 'Run Completed!',
-      message: 'Total run time is ${_secondText(totalRuntime)}',
-    );
-    alert.show(context);
+
+    Future.delayed(const Duration(seconds: 3)).then((_) => controller.close());
   }
 
   void _lap() {
-    scollController.animateTo(
-      itemHeight * laps.length, // offset
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeIn,
-    );
+    if (scollController.hasClients) {
+      scollController.animateTo(
+        itemHeight * laps.length, // offset
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeIn,
+      );
+    }
     setState(() {
       laps.add(milliseconds);
       milliseconds = 0;
@@ -169,15 +183,42 @@ class _StopWatchState extends State<StopWatch> {
           ),
         ),
         _spacer,
-        ElevatedButton(
-          onPressed: isTicking ? _stopTimer : null,
-          child: const Text('Stop'),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
-            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-          ),
-        )
+        Builder(builder: (context) {
+          return TextButton(
+            onPressed: isTicking ? () => _stopTimer(context) : null,
+            child: const Text('Stop'),
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.red),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            ),
+          );
+        })
       ],
+    );
+  }
+
+  Widget _buildRunCompleteSheet(BuildContext context) {
+    final totalRuntime = laps.fold(
+      milliseconds,
+      (int total, int lap) => total + lap,
+    );
+    final textTheme = Theme.of(context).textTheme;
+
+    return SafeArea(
+      child: Container(
+        color: Theme.of(context).cardColor,
+        width: double.infinity,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Run Completed!', style: textTheme.headline6),
+              Text('Total run time is ${_secondText(totalRuntime)}'),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
