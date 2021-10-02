@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stopwatch/stopwatch.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -8,7 +9,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool loggedIn = false;
   late String name;
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -19,18 +19,8 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: Center(
-        child: loggedIn ? _buildSuccess() : _buildLoginForm(),
+        child: _buildLoginForm(),
       ),
-    );
-  }
-
-  Widget _buildSuccess() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.check, color: Colors.orangeAccent),
-        Text('Hi $name'),
-      ],
     );
   }
 
@@ -70,9 +60,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final form = _formKey.currentState;
     if (!form!.validate()) return;
 
-    setState(() {
-      loggedIn = true;
-      name = _nameController.text;
-    });
+    final name = _nameController.text;
+    final email = _emailController.text;
+
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => StopWatch(name: name, email: email),
+      ),
+    );
   }
 }
