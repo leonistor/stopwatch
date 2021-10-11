@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stopwatch/login_screen.dart';
 
 void main() {
@@ -10,8 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LoginScreen(),
+    return MaterialApp(
+      theme: ThemeData(
+        textTheme:
+            GoogleFonts.ibmPlexMonoTextTheme(Theme.of(context).textTheme),
+      ),
+      home: const LoginScreen(),
     );
   }
 }
