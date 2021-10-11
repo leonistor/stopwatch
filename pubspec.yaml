@@ -26,7 +26,7 @@ flutter:
     - google_fonts/
 
 flutter_icons:
-  android: false
+  android: true
   ios: true
   remove_alpha_ios: true
   image_path: "assets/stopwatch.png"
