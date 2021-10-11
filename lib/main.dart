@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
         textTheme:
             GoogleFonts.ibmPlexMonoTextTheme(Theme.of(context).textTheme),
       ),
+      debugShowCheckedModeBanner: false,
       home: const LoginScreen(),
     );
   }
