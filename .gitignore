@@ -46,4 +46,4 @@ app.*.map.json
 /android/app/release
 
 # upload key
-/android/app/key.properties
+/android/key.properties
