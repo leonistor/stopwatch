@@ -3,17 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:stopwatch/platform_alert.dart';
 
-const useAlert = false;
-
 class StopWatch extends StatefulWidget {
-  static const route = '/stopwatch';
-
   final String name;
-  final String email;
+
   const StopWatch({
     Key? key,
     required this.name,
-    required this.email,
   }) : super(key: key);
 
   @override
@@ -55,17 +50,15 @@ class _StopWatchState extends State<StopWatch> {
       isTicking = false;
     });
 
-    if (useAlert) {
-      final totalRuntime = laps.fold(
-        milliseconds,
-        (int total, lap) => total + lap,
-      );
-      final alert = PlatformAlert(
-        title: 'Run Completed!',
-        message: 'Total run time is ${_secondText(totalRuntime)}',
-      );
-      alert.show(context);
-    }
+    final totalRuntime = laps.fold(
+      milliseconds,
+      (int total, lap) => total + lap,
+    );
+    final alert = PlatformAlert(
+      title: 'Run Completed!',
+      message: 'Total run time is ${_secondText(totalRuntime)}',
+    );
+    alert.show(context);
 
     // bottom sheet
     final controller = showBottomSheet(
@@ -99,14 +92,8 @@ class _StopWatchState extends State<StopWatch> {
 
   @override
   Widget build(BuildContext context) {
-    String args = ModalRoute.of(context)!.settings.arguments.toString();
-    List<String> argList = args.split("|");
-    final name = argList[0];
-    final email = argList[1];
-    // ignore: avoid_print
-    print(email);
     return Scaffold(
-      appBar: AppBar(title: Text(name)),
+      appBar: AppBar(title: Text(widget.name)),
       body: Column(
         children: [
           Expanded(child: _buildCounter(context)),

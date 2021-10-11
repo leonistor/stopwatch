@@ -4,4 +4,4 @@ A Flutter project.
 
 ## Description
 
-Use `stopwatch` for timing your fitness exercises.
+Use `stopwatch` for timing laps in running/jogging.
